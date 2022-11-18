@@ -129,30 +129,33 @@ def __lowpass__(x, samplerate, fp, fs, gpass, gstop):
 
 def main():
     # Make test wave data
-    sr = 200*pow(10,3)
-    f_mod = 4000
-    f_detect = 4000
-    send_amp = 2
-    noise_cor = 0.1
-    wave_time = np.arange(0,0.1,1/sr)
-    no_signal_time = np.arange(0,0.1,1/sr)
-    init_phase = np.pi/2
-    send_wave_time = np.concatenate([no_signal_time,no_signal_time[-1]+wave_time],axis=0)
+    sr = 200*pow(10,3)              # sampling rate
+    f_mod = 4000                    # send frequency
+    f_detect = 4000                 # detect frequency
+    send_amp = 2                    # send amplitude
+    noise_cor = 0.1                 # noise power
+    wave_time = np.arange(0,0.1,1/sr) # send wave time
+    init_phase_diff = -np.pi/2        # diffrence of init phase  
+    init_phase_diff_time = init_phase_diff/(2*np.pi)*(1/f_mod) # covert phase to time
+    no_signal_time = np.arange(0,0.1+init_phase_diff_time,1/sr) # calc time of flight
+    no_signal_data = np.zeros_like(no_signal_time)  # time of flight data
     
-    wave = send_amp*np.sin(2*np.pi*f_mod*wave_time+init_phase)
-    window = np.hanning(wave_time.shape[0])
-    no_signal_data = np.zeros_like(no_signal_time)
+    wave = send_amp*np.sin(2*np.pi*f_mod*wave_time) # send signal
+    window = np.hanning(wave_time.shape[0])         # window
     
-    send_signal = np.concatenate([no_signal_data,wave*window],axis=0)
-    send_signal = send_signal + noise_cor*np.random.random(send_signal.shape[0])
+    send_signal = np.concatenate([no_signal_data,wave*window],axis=0) # make send wave
+    send_signal = send_signal + noise_cor*np.random.random(send_signal.shape[0]) # add noise
 
     # Test functions    
     demod_amp,demod_phase = detection(send_signal,sr,f_detect,1000,2000,gpass=3,gstop=40)
     init_phase = get_max_init_phase(send_signal,sr,f_detect,1000,2000,gpass=3,gstop=40)
     amp_max_time = get_amp_max_time(send_signal,sr,f_detect,1000,2000,gpass=3,gstop=40)
 
+    # Result plot
     fig,ax = plt.subplots(4,1,tight_layout=True)
     fig.suptitle("Test Data")
+    # calc time for plot
+    send_wave_time = np.concatenate([no_signal_time,no_signal_time[-1]+wave_time],axis=0)
     ax[0].set_title("send wave")
     ax[0].plot(send_wave_time,send_signal,'-')
     ax[1].set_title("detected amp")
