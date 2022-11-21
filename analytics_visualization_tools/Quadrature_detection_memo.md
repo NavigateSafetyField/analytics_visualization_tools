@@ -6,9 +6,12 @@
 This program calculates amplitude and init phase from wave data.  
 There are function calulate time series demodulate data and init phase,time of max amplitude time.  
 
-# Blog(ja)
-直交検波とこのプログラムについての説明のブログです。
-https://navigatesafetyfield.hatenablog.com/entry/2022/11/20/151732
+# Blog
+直交検波とこのプログラムについての説明のブログです。  
+(Japanese)  
+https://navigatesafetyfield.hatenablog.com/entry/2022/11/20/151732  
+(English)  
+https://nsf-english.hatenablog.com/entry/2022/11/21/125753
 
 # requirements
 開発環境  
